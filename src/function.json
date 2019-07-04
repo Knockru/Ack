@@ -1,10 +1,10 @@
 {
   "bindings": [
     {
-      "name": "myTimer",
+      "name": "ack",
       "type": "timerTrigger",
       "direction": "in",
-      "schedule": "0 0 3 8 * *"
+      "schedule": "0 0 3 10 * *"
     }
   ],
   "scriptFile": "../dist/index.js"

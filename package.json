@@ -11,9 +11,12 @@
     "build:production": "npm run prestart && npm prune --production",
     "test": "echo \"No tests yet...\""
   },
-  "dependencies": {},
+  "dependencies": {
+    "got": "^9.6.0"
+  },
   "devDependencies": {
     "@azure/functions": "^1.0.2-beta2",
+    "@types/got": "^9.6.0",
     "typescript": "^3.3.3"
   }
 }
