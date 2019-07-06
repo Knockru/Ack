@@ -80,7 +80,7 @@ export class CoinZ implements IExchange {
   }
 
   private async get<T>(path: string): Promise<Response<T>> {
-    await this.waitForRateLimits(path);
+    await this.waitForRateLimits();
 
     const headers = this.createHeaders("GET", path);
     const response = await got.get(path, { baseUrl: this.host, headers });
@@ -88,7 +88,7 @@ export class CoinZ implements IExchange {
   }
 
   private async post<T>(path: string, body: any = null): Promise<Response<T>> {
-    await this.waitForRateLimits(path);
+    await this.waitForRateLimits();
 
     const headers = this.createHeaders("POST", path, body);
     const response = await got.post(path, { baseUrl: this.host, headers, body });
@@ -96,7 +96,7 @@ export class CoinZ implements IExchange {
   }
 
   // GMO CoinZ has API rate-limits : private API can called up to 1 time in 300ms
-  private async waitForRateLimits(path: string): Promise<void> {
+  private async waitForRateLimits(): Promise<void> {
     if (this.lastCallAt + 300 <= Date.now()) {
       this.lastCallAt = Date.now();
       return;

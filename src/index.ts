@@ -3,7 +3,6 @@ import { AzureFunction, Context } from "@azure/functions";
 import { EXCHANGES } from "./exchanges";
 import { IExchange } from "./exchanges/exchange";
 import { tryParseInt } from "./utils";
-import { KeyValuePair } from "./types";
 
 function fetchExchange(): IExchange {
   return EXCHANGES.filter(w => w.id === process.env.ACK_EXCHANGE)[0];
