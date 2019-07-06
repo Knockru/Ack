@@ -28,6 +28,11 @@ function verifyVariables(): boolean {
   return success;
 }
 
+async function notify(message: string): Promise<void> {
+  console.log(message);
+  // TODO: Impl
+}
+
 async function run(context: Context, timer: any): Promise<void> {
   const isVerified = verifyVariables();
   if (!isVerified) {
@@ -38,7 +43,13 @@ async function run(context: Context, timer: any): Promise<void> {
   const exchange = fetchExchange();
   exchange.initialize();
 
+  const amounts = parseInt(process.env.ACK_ORDER_AMOUNT);
+  const symbols = process.env.ACK_ORDER_TICKERS.split(",");
   const balance = await exchange.fetchBalance();
+  if (balance["JPY"] <= amounts * symbols.length) {
+    await notify(`WARNING: Current JPY balance is lower than \`amounts * symbols\`, please check your JPY balance on ${exchange.name}.`);
+    return;
+  }
 }
 
 export default run;

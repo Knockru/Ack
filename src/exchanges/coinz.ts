@@ -19,6 +19,7 @@ type Asset = {
 
 export class CoinZ implements IExchange {
   public id = "coinz";
+  public name = "GMO CoinZ";
   public tickers = ["BTC", "ETH", "BCH", "LTC", "XRP"];
   public variables = ["API_KEY", "API_SECRET"];
 

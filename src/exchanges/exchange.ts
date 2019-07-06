@@ -4,6 +4,7 @@ export type Balance = {
 
 export interface IExchange {
   id: string;
+  name: string;
   tickers: string[];
   variables: string[];
 
