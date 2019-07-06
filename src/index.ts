@@ -1,8 +1,8 @@
 import { AzureFunction, Context } from "@azure/functions";
 
 import { EXCHANGES } from "./exchanges";
-import { tryParseInt } from "./utils";
 import { IExchange } from "./exchanges/exchange";
+import { tryParseInt } from "./utils";
 
 function fetchExchange(): IExchange {
   return EXCHANGES.filter(w => w.id === process.env.ACK_EXCHANGE)[0];
@@ -36,6 +36,9 @@ async function run(context: Context, timer: any): Promise<void> {
   }
 
   const exchange = fetchExchange();
+  exchange.initialize();
+
+  const balance = await exchange.fetchBalance();
 }
 
 export default run;
