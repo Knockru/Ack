@@ -10,3 +10,9 @@ export function tryParseInt(str: string): IResult<number> {
     return { value: 0, isSuccess: false };
   }
 }
+
+export function sleep(timeout: number): Promise<void> {
+  return new Promise(resolve => {
+    setTimeout(() => resolve(), timeout);
+  });
+}
