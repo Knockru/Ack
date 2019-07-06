@@ -48,14 +48,13 @@ async function run(context: Context, timer: any): Promise<void> {
   const amounts = parseInt(process.env.ACK_ORDER_AMOUNT);
   const symbols = process.env.ACK_ORDER_TICKERS.split(",");
   const balance = await exchange.fetchBalance();
-  if (balance["JPY"] <= amounts * symbols.length) {
+  if (balance["JPY"] <= (amounts + amounts * 0.1) * symbols.length) {
     await notify(`WARNING: Current JPY balance is lower than \`amounts * symbols\`, please check your JPY balance on ${exchange.name}.`);
     return;
   }
 
-  // calculate order amounts from current pricings
+  // calculate order amounts from current pricings and making a market order
   const tickers = await exchange.fetchTickers();
-  const orders: KeyValuePair<number> = {};
   for (let symbol of symbols) {
     const limit = exchange.limits[symbol];
     const digit = 1 / limit.min;
@@ -65,15 +64,8 @@ async function run(context: Context, timer: any): Promise<void> {
       continue;
     }
 
-    orders[symbol] = order >= limit.max ? limit.max : order;
-  }
-
-  // make a market order
-  for (let symbol of symbols) {
-    if (!orders[symbol]) continue;
-
-    await exchange.makeBuyMarketOrder(symbol, orders[symbol]);
-    await notify(`ORDERD: Placed a marked order for ${symbol} at ${orders[symbol]}${symbol}.`);
+    await exchange.makeBuyMarketOrder(symbol, order >= limit.max ? limit.max : order);
+    await notify(`ORDERD: Placed a marked order for ${symbol} at ${order >= limit.max ? limit.max : order}${symbol}.`);
   }
 }
 
