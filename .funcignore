@@ -1,7 +1,8 @@
 *.js.map
 *.ts
 .git*
+__tests__
 .vscode
 local.settings.json
-test
+jest.config.js
 tsconfig.json

@@ -4,7 +4,7 @@ interface IResult<T> {
 }
 
 export function tryParseInt(str: string): IResult<number> {
-  if (/^\w+$/.test(str)) {
+  if (str.match(/^\d+$/)) {
     return { value: parseInt(str), isSuccess: true };
   } else {
     return { value: 0, isSuccess: false };
