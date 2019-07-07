@@ -50,6 +50,7 @@ jobs:
     steps:
       - restore_repo
       - restore_deps
+      - run: yarn install --frozen-lockfile
       - run: yarn run test
 
 workflows:
