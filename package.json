@@ -9,7 +9,7 @@
     "start:host": "func start",
     "start": "npm run start:host & npm run watch",
     "build:production": "npm run prestart && npm prune --production",
-    "test": "echo \"No tests yet...\""
+    "test": "jest"
   },
   "dependencies": {
     "got": "^9.6.0"
@@ -17,7 +17,10 @@
   "devDependencies": {
     "@azure/functions": "^1.0.2-beta2",
     "@types/got": "^9.6.0",
+    "@types/jest": "^24.0.15",
+    "jest": "^24.8.0",
     "prettier": "^1.18.2",
+    "ts-jest": "^24.0.2",
     "typescript": "^3.3.3"
   }
 }
