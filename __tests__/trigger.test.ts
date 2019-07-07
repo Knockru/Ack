@@ -18,10 +18,15 @@ function cleanup() {
 
 describe("trigger#", () => {
   describe("fetchExchange", () => {
-    it("returns IExchange", () => {
+    let exchange;
+
+    beforeAll(() => {
       setup();
 
-      const exchange = trigger.fetchExchange();
+      exchange = trigger.fetchExchange();
+    });
+
+    it("returns IExchange", () => {
       expect(exchange).toBeInstanceOf(Object);
     });
   });
