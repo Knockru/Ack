@@ -1,5 +1,8 @@
 # Ack
 
+![GitHub](https://img.shields.io/github/license/Knockru/Ack.svg?style=flat-square)
+![CircleCI](https://img.shields.io/circleci/build/github/Knockru/Ack.svg?style=flat-square)
+
 Ack periodically places a fixed amount of market order on the cryptocurrency exchange.  
 
 
