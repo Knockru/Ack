@@ -36,7 +36,7 @@ export class CoinZ implements IExchange {
     ETH: { min: 0.01, max: 300 },
     BCH: { min: 0.01, max: 300 },
     LTC: { min: 0.1, max: 500 },
-    XRP: { min: 10, max: 300000 }
+    XRP: { min: 1, max: 300000 }
   };
   public tickers = ["BTC", "ETH", "BCH", "LTC", "XRP"];
   public variables = ["API_KEY", "API_SECRET"];
