@@ -75,8 +75,14 @@ export class CoinZ implements IExchange {
     return tickers;
   }
 
-  public makeBuyMarketOrder(symbol: string, size: number): Promise<Order> {
-    throw new Error("Method not implemented.");
+  public async makeBuyMarketOrder(symbol: string, size: number): Promise<Order> {
+    const params = { size, symbol, side: "BUY", executionType: "MARKET" };
+
+    const orderResp = await this.post<string>("/private/v1/order", params);
+    if (orderResp.status != 0) return null;
+
+    const order = await this.get<Order>(`/private/v1/orders?orderId=${orderResp.data}`);
+    return order.data;
   }
 
   private async get<T>(path: string): Promise<Response<T>> {
