@@ -1,0 +1,10 @@
+pull_request_rules:
+  - name: automatic merge for dependabot pull requests
+    conditions:
+      - author=dependabot[bot]
+      - base=develop
+      - status-success=ci/circleci: test_aws_viewer
+      - status-success=ci/circleci: test_shared
+    actions:
+      merge:
+        method: merge
