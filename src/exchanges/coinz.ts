@@ -1,6 +1,7 @@
 import { createHmac } from "crypto";
 import * as got from "got";
 
+import { FunctionEnv } from "../env";
 import { KeyValuePair } from "../types";
 import { sleep } from "../utils";
 import { Balance, IExchange, Order, OrderLimit, Tickers } from "./exchange";
@@ -40,15 +41,14 @@ export class CoinZ implements IExchange {
   };
   public tickers = ["BTC", "ETH", "BCH", "LTC", "XRP"];
   public variables = ["API_KEY", "API_SECRET"];
-
   private host = "https://api.coin.z.com";
   private key: string;
   private secret: string;
   private lastCallAt: number;
 
-  public initialize(): void {
-    this.key = process.env.ACK_COINZ_API_KEY;
-    this.secret = process.env.ACK_COINZ_API_SECRET;
+  public async initialize(env: FunctionEnv<string>): Promise<void> {
+    this.key = await env.get("ACK_COINZ_API_KEY");
+    this.secret = await env.get("ACK_COINZ_API_SECRET");
     this.lastCallAt = Date.parse("1970/01/01 00:00:00");
   }
 

@@ -1,4 +1,5 @@
-import { KeyValuePair } from "src/types";
+import { FunctionEnv } from "../env";
+import { KeyValuePair } from "../types";
 
 export type Balance = KeyValuePair<number>;
 
@@ -28,7 +29,7 @@ export interface IExchange {
   tickers: string[];
   variables: string[];
 
-  initialize(): void;
+  initialize(env: FunctionEnv<string>): Promise<void>;
   fetchBalance(): Promise<Balance>;
   fetchTickers(): Promise<Tickers>;
   makeBuyMarketOrder(symbol: string, size: number): Promise<Order>;

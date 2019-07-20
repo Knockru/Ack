@@ -4,12 +4,13 @@ import * as got from "got";
 import { EXCHANGES } from "./exchanges";
 import { IExchange, Limit } from "./exchanges/exchange";
 import { tryParseInt } from "./utils";
+import { FunctionEnv } from "./env";
 
 export function fetchExchange(): IExchange {
   return EXCHANGES.filter(w => w.id === process.env.ACK_EXCHANGE)[0];
 }
 
-export function verifyVariables(): boolean {
+export function verifyVariables(env: FunctionEnv<string>): boolean {
   let success = true;
 
   // ACK_EXCHANGE is required
@@ -24,7 +25,7 @@ export function verifyVariables(): boolean {
   success = success && (!!process.env.ACK_ORDER_TICKERS && process.env.ACK_ORDER_TICKERS.split(",").every(w => exchange.tickers.includes(w)));
 
   // ACK_${EXCHANGE_ID}_API_* is required
-  success = success && exchange.variables.every(w => !!process.env[`ACK_${process.env.ACK_EXCHANGE.toUpperCase()}_${w}`]);
+  success = success && exchange.variables.every(w => !!env.get(`ACK_${process.env.ACK_EXCHANGE.toUpperCase()}_${w}`));
 
   return success;
 }
@@ -41,14 +42,15 @@ export function calcOrder(amount: number, ask: number, limit: Limit): number {
 }
 
 export async function run(context: Context, timer: any): Promise<void> {
-  const isVerified = verifyVariables();
+  const env = new FunctionEnv<string>(process.env.ACK_AZURE_KEY_VAULT_NAME);
+  const isVerified = verifyVariables(env);
   if (!isVerified) {
     console.error("Environment variables checks failed. Please check your configurations");
     return;
   }
 
   const exchange = fetchExchange();
-  exchange.initialize();
+  await exchange.initialize(env);
 
   // fetch current balances
   const amounts = parseInt(process.env.ACK_ORDER_AMOUNT);
