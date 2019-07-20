@@ -1,4 +1,5 @@
 import * as trigger from "../src/index";
+import { FunctionEnv } from "../src/env";
 
 function setup() {
   process.env.ACK_EXCHANGE = "coinz";
@@ -33,11 +34,17 @@ describe("trigger#", () => {
 
   describe("verifyVariables", () => {
     let isVerified: boolean;
+    let env: FunctionEnv<string>;
+
+    beforeAll(() => {
+      env = new FunctionEnv<string>("knockru");
+    });
+
     describe("all variables are setted", () => {
       beforeAll(() => {
         setup();
 
-        isVerified = trigger.verifyVariables(null);
+        isVerified = trigger.verifyVariables(env);
       });
 
       it("returns true", () => {
@@ -50,7 +57,7 @@ describe("trigger#", () => {
         setup();
         delete process.env.ACK_EXCHANGE;
 
-        isVerified = trigger.verifyVariables(null);
+        isVerified = trigger.verifyVariables(env);
       });
 
       it("returns false", () => {
@@ -63,7 +70,7 @@ describe("trigger#", () => {
         setup();
         process.env.ACK_EXCHANGE = "bitflyer";
 
-        isVerified = trigger.verifyVariables(null);
+        isVerified = trigger.verifyVariables(env);
       });
 
       it("returns false", () => {
@@ -76,7 +83,7 @@ describe("trigger#", () => {
         setup();
         delete process.env.ACK_ORDER_AMOUNT;
 
-        isVerified = trigger.verifyVariables(null);
+        isVerified = trigger.verifyVariables(env);
       });
 
       it("returns false", () => {
@@ -89,7 +96,7 @@ describe("trigger#", () => {
         setup();
         process.env.ACK_ORDER_AMOUNT = "123hello";
 
-        isVerified = trigger.verifyVariables(null);
+        isVerified = trigger.verifyVariables(env);
       });
 
       it("returns false", () => {
@@ -102,7 +109,7 @@ describe("trigger#", () => {
         setup();
         delete process.env.ACK_ORDER_TICKERS;
 
-        isVerified = trigger.verifyVariables(null);
+        isVerified = trigger.verifyVariables(env);
       });
 
       it("returns false", () => {
@@ -115,7 +122,7 @@ describe("trigger#", () => {
         setup();
         process.env.ACK_ORDER_TICKERS = "BTC,ETH,XRP,ZEC";
 
-        isVerified = trigger.verifyVariables(null);
+        isVerified = trigger.verifyVariables(env);
       });
 
       it("returns false", () => {
