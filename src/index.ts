@@ -1,4 +1,5 @@
 import { AzureFunction, Context } from "@azure/functions";
+import * as got from "got";
 
 import { EXCHANGES } from "./exchanges";
 import { IExchange, Limit } from "./exchanges/exchange";
@@ -29,8 +30,8 @@ export function verifyVariables(): boolean {
 }
 
 export async function notify(message: string): Promise<void> {
-  console.log(message);
-  // TODO: Impl
+  const content = { username: "Ack", text: message };
+  await got.post(process.env.ACK_SLACK_NOTIFICATION_URL, { body: JSON.stringify(content) });
 }
 
 export function calcOrder(amount: number, ask: number, limit: Limit): number {
