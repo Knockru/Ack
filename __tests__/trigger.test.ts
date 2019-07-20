@@ -37,7 +37,7 @@ describe("trigger#", () => {
       beforeAll(() => {
         setup();
 
-        isVerified = trigger.verifyVariables();
+        isVerified = trigger.verifyVariables(null);
       });
 
       it("returns true", () => {
@@ -50,7 +50,7 @@ describe("trigger#", () => {
         setup();
         delete process.env.ACK_EXCHANGE;
 
-        isVerified = trigger.verifyVariables();
+        isVerified = trigger.verifyVariables(null);
       });
 
       it("returns false", () => {
@@ -63,7 +63,7 @@ describe("trigger#", () => {
         setup();
         process.env.ACK_EXCHANGE = "bitflyer";
 
-        isVerified = trigger.verifyVariables();
+        isVerified = trigger.verifyVariables(null);
       });
 
       it("returns false", () => {
@@ -76,7 +76,7 @@ describe("trigger#", () => {
         setup();
         delete process.env.ACK_ORDER_AMOUNT;
 
-        isVerified = trigger.verifyVariables();
+        isVerified = trigger.verifyVariables(null);
       });
 
       it("returns false", () => {
@@ -89,7 +89,7 @@ describe("trigger#", () => {
         setup();
         process.env.ACK_ORDER_AMOUNT = "123hello";
 
-        isVerified = trigger.verifyVariables();
+        isVerified = trigger.verifyVariables(null);
       });
 
       it("returns false", () => {
@@ -102,7 +102,7 @@ describe("trigger#", () => {
         setup();
         delete process.env.ACK_ORDER_TICKERS;
 
-        isVerified = trigger.verifyVariables();
+        isVerified = trigger.verifyVariables(null);
       });
 
       it("returns false", () => {
@@ -115,7 +115,7 @@ describe("trigger#", () => {
         setup();
         process.env.ACK_ORDER_TICKERS = "BTC,ETH,XRP,ZEC";
 
-        isVerified = trigger.verifyVariables();
+        isVerified = trigger.verifyVariables(null);
       });
 
       it("returns false", () => {
