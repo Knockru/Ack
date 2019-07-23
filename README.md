@@ -22,7 +22,7 @@ Ack periodically places a fixed amount of market order on the cryptocurrency exc
 | `ACK_ORDER_TICKERS`          | Type of cryptocurrencies in which the order is places              | `BTC,ETH,XRP` |
 | `ACK_SLACK_NOTIFICATION_URL` | Slack Webhook URL to send logs                                     | `https://...` |
 | `AZURE_CLIENT_ID`            | Azure AD Application Client ID                                     | `xxxxxx-...`  |
-| `AZURE_CLIEN_SECRET`         | Azure AD Application Secret                                        | `xxxxxx`      |
+| `AZURE_CLIENT_SECRET`        | Azure AD Application Secret                                        | `xxxxxx`      |
 | `AZURE_TENANT_ID`            | Azure AD Tenant ID                                                 | `xxxxxx-...`  |
 
 ## Key Vault Secrets
