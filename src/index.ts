@@ -32,6 +32,9 @@ export async function verifyVariables(env: LookEnv<Variables>): Promise<boolean>
   return true;
 }
 
+export async function logging(env: LookEnv<Variables>, ctx: Context, type: "info" | "warn" | "error", message: string): Promise<void> {
+  ctx.log[type](message); // Write to Azure Insights
+  await got.post(await env.get("ACK_SLACK_NOTIFICATION_URL"), { body: JSON.stringify({ username: "Ack", text: message }) });
 }
 
 export async function notify(message: string): Promise<void> {
@@ -53,7 +56,7 @@ export async function run(context: Context, timer: any): Promise<void> {
 
   const isVerified = verifyVariables(env);
   if (!isVerified) {
-    console.error("Environment variables checks failed. Please check your configurations");
+    context.log.error("Environment variables checks failed. Please check your configurations");
     return;
   }
 
@@ -65,7 +68,8 @@ export async function run(context: Context, timer: any): Promise<void> {
   const symbols = (await env.get("ACK_ORDER_TICKERS")).split(",");
   const balance = await exchange.fetchBalance();
   if (balance["JPY"] <= (amounts + amounts * 0.1) * symbols.length) {
-    await notify(`WARNING: Current JPY balance is lower than \`amounts * symbols\`, please check your JPY balance on ${exchange.name}.`);
+    const msg = `WARNING: Current JPY balance is lower than \`amounts * symbols\`, please check your JPY balance on ${exchange.name}.`;
+    await logging(env, context, "warn", msg);
     return;
   }
 
@@ -75,12 +79,13 @@ export async function run(context: Context, timer: any): Promise<void> {
     const limit = exchange.limits[symbol];
     const order = calcOrder(amounts, tickers[symbol].ask, exchange.limits[symbol]);
     if (order < limit.min) {
-      await notify(`SKIPPED: Could not place an order with the current ${symbol} price: ${tickers[symbol].ask}.`);
+      const msg = `SKIPPED: Could not place an order with the current ${symbol} price: ${tickers[symbol].ask}.`;
+      await logging(env, context, "info", msg);
       continue;
     }
 
     await exchange.makeBuyMarketOrder(symbol, order);
-    await notify(`ORDERD: Placed a marked order for ${symbol} at ${order}${symbol}.`);
+    await logging(env, context, "info", `ORDERED: Placed a marked order for ${symbol} at ${order}${symbol}.`);
   }
 }
 
