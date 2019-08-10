@@ -1,33 +1,37 @@
-import { AzureFunction, Context } from "@azure/functions";
+import { Context } from "@azure/functions";
+import { EnvironmentCredential } from "@azure/identity";
+import LookEnv, { AzureIdentity } from "@mikazuki/lookenv";
 import * as got from "got";
 
 import { EXCHANGES } from "./exchanges";
 import { IExchange, Limit } from "./exchanges/exchange";
 import { tryParseInt } from "./utils";
-import { FunctionEnv } from "./env";
+import { Variables } from "./types";
 
-export function fetchExchange(): IExchange {
-  return EXCHANGES.filter(w => w.id === process.env.ACK_EXCHANGE)[0];
+export async function fetchExchange(env: LookEnv<Variables>): Promise<IExchange> {
+  const exchange = await env.get("ACK_EXCHANGE");
+  return EXCHANGES.filter(w => w.id === exchange)[0];
 }
 
-export function verifyVariables(env: FunctionEnv<string>): boolean {
-  let success = true;
+export async function verifyVariables(env: LookEnv<Variables>): Promise<boolean> {
+  if (!(await env.has("ACK_EXCHANGE", "ACK_ORDER_AMOUNT", "ACK_ORDER_TICKERS"))) {
+    return false;
+  }
 
-  // ACK_EXCHANGE is required
-  success = success && (!!process.env.ACK_EXCHANGE && EXCHANGES.some(w => w.id === process.env.ACK_EXCHANGE));
-  if (!success) return false;
+  const exchangeId = await env.get("ACK_EXCHANGE");
+  if (EXCHANGES.every(w => w.id != exchangeId)) return false;
 
-  // ACK_ORDER_AMOUNT is required
-  success = success && (!!process.env.ACK_ORDER_AMOUNT && tryParseInt(process.env.ACK_ORDER_AMOUNT).isSuccess);
+  if (!tryParseInt(await env.get("ACK_ORDER_AMOUNT")).isSuccess) return false;
 
-  // ACK_ORDER_TICKERS is required
-  const exchange = fetchExchange();
-  success = success && (!!process.env.ACK_ORDER_TICKERS && process.env.ACK_ORDER_TICKERS.split(",").every(w => exchange.tickers.includes(w)));
+  const exchange = await fetchExchange(env);
+  if ((await env.get("ACK_ORDER_TICKERS")).split(",").some(w => !exchange.tickers.includes(w))) return false;
 
-  // ACK_${EXCHANGE_ID}_API_* is required
-  success = success && exchange.variables.every(w => !!env.get(`ACK_${process.env.ACK_EXCHANGE.toUpperCase()}_${w}`));
+  const variables = exchange.variables.map(w => `ACK_${exchange.id.toUpperCase()}_${w}`);
+  if (!(await env.has(variables as any))) return false;
 
-  return success;
+  return true;
+}
+
 }
 
 export async function notify(message: string): Promise<void> {
@@ -42,26 +46,30 @@ export function calcOrder(amount: number, ask: number, limit: Limit): number {
 }
 
 export async function run(context: Context, timer: any): Promise<void> {
-  const env = new FunctionEnv<string>(process.env.ACK_AZURE_KEY_VAULT_NAME);
+  if (timer.IsPastDue) return;
+
+  const azure = new AzureIdentity(process.env.ACK_AZURE_KEY_VAULT_NAME, new EnvironmentCredential());
+  const env = new LookEnv<Variables>(azure);
+
   const isVerified = verifyVariables(env);
   if (!isVerified) {
     console.error("Environment variables checks failed. Please check your configurations");
     return;
   }
 
-  const exchange = fetchExchange();
+  const exchange = await fetchExchange(env);
   await exchange.initialize(env);
 
   // fetch current balances
-  const amounts = parseInt(process.env.ACK_ORDER_AMOUNT);
-  const symbols = process.env.ACK_ORDER_TICKERS.split(",");
+  const amounts = parseInt(await env.get("ACK_ORDER_AMOUNT"));
+  const symbols = (await env.get("ACK_ORDER_TICKERS")).split(",");
   const balance = await exchange.fetchBalance();
   if (balance["JPY"] <= (amounts + amounts * 0.1) * symbols.length) {
     await notify(`WARNING: Current JPY balance is lower than \`amounts * symbols\`, please check your JPY balance on ${exchange.name}.`);
     return;
   }
 
-  // calculate order amounts from current pricings and making a market order
+  // calculate order amounts from current pricing and making a market order
   const tickers = await exchange.fetchTickers();
   for (let symbol of symbols) {
     const limit = exchange.limits[symbol];

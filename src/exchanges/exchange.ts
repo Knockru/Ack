@@ -1,5 +1,5 @@
-import { FunctionEnv } from "../env";
-import { KeyValuePair } from "../types";
+import LookEnv from "@mikazuki/lookenv";
+import { KeyValuePair, Variables } from "../types";
 
 export type Balance = KeyValuePair<number>;
 
@@ -29,7 +29,7 @@ export interface IExchange {
   tickers: string[];
   variables: string[];
 
-  initialize(env: FunctionEnv<string>): Promise<void>;
+  initialize(env: LookEnv<Variables>): Promise<void>;
   fetchBalance(): Promise<Balance>;
   fetchTickers(): Promise<Tickers>;
   makeBuyMarketOrder(symbol: string, size: number): Promise<Order>;

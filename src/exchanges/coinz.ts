@@ -1,8 +1,8 @@
 import { createHmac } from "crypto";
 import * as got from "got";
+import LookEnv from "@mikazuki/lookenv";
 
-import { FunctionEnv } from "../env";
-import { KeyValuePair } from "../types";
+import { KeyValuePair, Variables } from "../types";
 import { sleep } from "../utils";
 import { Balance, IExchange, Order, OrderLimit, Tickers } from "./exchange";
 
@@ -46,7 +46,7 @@ export class CoinZ implements IExchange {
   private secret: string;
   private lastCallAt: number;
 
-  public async initialize(env: FunctionEnv<string>): Promise<void> {
+  public async initialize(env: LookEnv<Variables>): Promise<void> {
     this.key = await env.get("ACK_COINZ_API_KEY");
     this.secret = await env.get("ACK_COINZ_API_SECRET");
     this.lastCallAt = Date.parse("1970/01/01 00:00:00");
@@ -97,7 +97,7 @@ export class CoinZ implements IExchange {
     await this.waitForRateLimits();
 
     const headers = this.createHeaders("POST", path, body);
-    const response = await got.post(path, { baseUrl: this.host, headers, body });
+    const response = await got.post(path, { baseUrl: this.host, headers, body: JSON.stringify(body) });
     return JSON.parse(response.body) as Response<T>;
   }
 
