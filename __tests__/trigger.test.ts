@@ -1,5 +1,6 @@
+import LookEnv from "@mikazuki/lookenv";
 import * as trigger from "../src/index";
-import { FunctionEnv } from "../src/env";
+import { Variables } from "../src/types";
 
 function setup() {
   process.env.ACK_EXCHANGE = "coinz";
@@ -24,7 +25,7 @@ describe("trigger#", () => {
     beforeAll(() => {
       setup();
 
-      exchange = trigger.fetchExchange();
+      exchange = trigger.fetchExchange(new LookEnv<Variables>());
     });
 
     it("returns IExchange", () => {
@@ -34,17 +35,17 @@ describe("trigger#", () => {
 
   describe("verifyVariables", () => {
     let isVerified: boolean;
-    let env: FunctionEnv<string>;
+    let env: LookEnv<Variables>;
 
     beforeAll(() => {
-      env = new FunctionEnv<string>("knockru");
+      env = new LookEnv<Variables>();
     });
 
-    describe("all variables are setted", () => {
-      beforeAll(() => {
+    describe("all variables are set", () => {
+      beforeAll(async () => {
         setup();
 
-        isVerified = trigger.verifyVariables(env);
+        isVerified = await trigger.verifyVariables(env);
       });
 
       it("returns true", () => {
@@ -53,11 +54,11 @@ describe("trigger#", () => {
     });
 
     describe("ACK_EXCHANGE is not set", () => {
-      beforeAll(() => {
+      beforeAll(async () => {
         setup();
         delete process.env.ACK_EXCHANGE;
 
-        isVerified = trigger.verifyVariables(env);
+        isVerified = await trigger.verifyVariables(env);
       });
 
       it("returns false", () => {
@@ -66,11 +67,11 @@ describe("trigger#", () => {
     });
 
     describe("ACK_EXCHANGE is invalid value", () => {
-      beforeAll(() => {
+      beforeAll(async () => {
         setup();
         process.env.ACK_EXCHANGE = "bitflyer";
 
-        isVerified = trigger.verifyVariables(env);
+        isVerified = await trigger.verifyVariables(env);
       });
 
       it("returns false", () => {
@@ -79,11 +80,11 @@ describe("trigger#", () => {
     });
 
     describe("ACK_ORDER_AMOUNT is not set", () => {
-      beforeAll(() => {
+      beforeAll(async () => {
         setup();
         delete process.env.ACK_ORDER_AMOUNT;
 
-        isVerified = trigger.verifyVariables(env);
+        isVerified = await trigger.verifyVariables(env);
       });
 
       it("returns false", () => {
@@ -92,11 +93,11 @@ describe("trigger#", () => {
     });
 
     describe("ACK_ORDER_AMOUNT is not a number", () => {
-      beforeAll(() => {
+      beforeAll(async () => {
         setup();
         process.env.ACK_ORDER_AMOUNT = "123hello";
 
-        isVerified = trigger.verifyVariables(env);
+        isVerified = await trigger.verifyVariables(env);
       });
 
       it("returns false", () => {
@@ -105,11 +106,11 @@ describe("trigger#", () => {
     });
 
     describe("ACK_ORDER_TICKERS is not set", () => {
-      beforeAll(() => {
+      beforeAll(async () => {
         setup();
         delete process.env.ACK_ORDER_TICKERS;
 
-        isVerified = trigger.verifyVariables(env);
+        isVerified = await trigger.verifyVariables(env);
       });
 
       it("returns false", () => {
@@ -118,11 +119,11 @@ describe("trigger#", () => {
     });
 
     describe("ACK_ORDER_TICKERS includes invalid ticker", () => {
-      beforeAll(() => {
+      beforeAll(async () => {
         setup();
         process.env.ACK_ORDER_TICKERS = "BTC,ETH,XRP,ZEC";
 
-        isVerified = trigger.verifyVariables(env);
+        isVerified = await trigger.verifyVariables(env);
       });
 
       it("returns false", () => {
