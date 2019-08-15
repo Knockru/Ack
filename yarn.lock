@@ -421,10 +421,10 @@
   resolved "https://registry.yarnpkg.com/@types/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#1ee30d79544ca84d68d4b3cdb0af4f205663dd2d"
   integrity sha512-OCutwjDZ4aFS6PB1UZ988C4YgwlBHJd6wCeQqaLdmadZ/7e+w79+hbMUFC1QXDNCmdyoRfAFdm0RypzwR+Qpag==
 
-"@types/got@9.6.6":
-  version "9.6.6"
-  resolved "https://registry.yarnpkg.com/@types/got/-/got-9.6.6.tgz#7027db35e4591579a4275e9a984359a614581cd2"
-  integrity sha512-4RQwvgFFSGBQB0jzkhfoUKp8HWIX5hSDv/cutU7KG8kDniaEFQpHPUzFTG3paiXC8xzHvHXxYHIfRS7+RCme9A==
+"@types/got@9.6.7":
+  version "9.6.7"
+  resolved "https://registry.yarnpkg.com/@types/got/-/got-9.6.7.tgz#33d84c60cba83e3c904634a1ea7ea81d1549bea6"
+  integrity sha512-LMc2ja42bQorKpBxf38ZBPdT3FhYL0lyAqnZBo5vAPCtobYa8AiHwSLH5zDvR19r2Pr5Ojar3hT/QLLb2SoPYA==
   dependencies:
     "@types/node" "*"
     "@types/tough-cookie" "*"
